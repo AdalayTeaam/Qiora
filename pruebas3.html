@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Carrusel Circular con Botones</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: white;
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    .contenedor {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+    .fondo {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      z-index: 0;
+    }
+    .fondo.visible {
+      opacity: 1;
+      z-index: 1;
+    }
+    .circulo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 500px;
+      height: 500px;
+      margin-left: -250px;
+      margin-top: -250px;
+      border-radius: 50%;
+      z-index: 2;
+    }
+    .imagen-circular {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+    }
+    .botones {
+      position: absolute;
+      top: 40vh;
+      left: 80%;
+      z-index: 10;
+      display: flex;
+      gap: 15px;
+      flex-direction: column;
+    }
+
+    .botones button {
+      padding: 15px 60px;
+      border: none;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      opacity: 0.5;
+      border-radius: 8px;
+      transition: opacity 0.3s, background-color 0.3s;
+      background-color: transparent;
+      font-size: 18px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+    .botones button.activo {
+      opacity: 1;
+      /* El color de fondo según el color del círculo activo */
+      background-color: var(--btn-color);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+    }
+    .texto {
+      position: absolute;
+      left: 60%;
+      transform: translateX(-50%);
+      text-align: center;
+      color: black;
+      z-index: 5;
+      top: 45vh;
+    }
+    .texto h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+    .texto p {
+      font-size: 18px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="contenedor">
+    <!-- Fondos -->
+    <div class="fondo visible" id="fondo0" style="background-image: url('../Qiora/img/Fondo/uno_conecta_img.png');"></div>
+    <div class="fondo" id="fondo1" style="background-image: url('../Qiora/img/Fondo/dos_telecom_img.png');"></div>
+    <div class="fondo" id="fondo2" style="background-image: url('../Qiora/img/Fondo/tres_infra_img.png');"></div>
+    <div class="fondo" id="fondo3" style="background-image: url('../Qiora/img/Fondo/cuatro_capital_img.png');"></div>
+
+    <!-- Círculo animado -->
+    <div class="circulo" id="circulo"></div>
+
+    <!-- Botones -->
+    <div class="botones">
+      <button id="btn0">Conecta</button>
+      <button id="btn1">Telecom</button>
+      <button id="btn2">Infraestructura</button>
+      <button id="btn3">Capital</button>
+    </div>
+
+    <!-- Texto -->
+    <div class="texto">
+      <h1 id="titulo">Conecta</h1>
+      <p id="cuadroTexto">Texto descriptivo de Conecta.</p>
+    </div>
+  </div>
+
+  <script>
+    const coloresCI = ['#2ecc71', '#3498db', '#e67e22', '#e74c3c'];
+    const textos = [
+      { titulo: 'Conecta', texto: 'Texto descriptivo de Conecta.' },
+      { titulo: 'Telecom', texto: 'Texto descriptivo de Telecom.' },
+      { titulo: 'Infraestructura', texto: 'Texto descriptivo de Infraestructura.' },
+      { titulo: 'Capital', texto: 'Texto descriptivo de Capital.' }
+    ];
+
+    const fondos = ['fondo0', 'fondo1', 'fondo2', 'fondo3'];
+    const total = coloresCI.length;
+    const circulo = document.getElementById("circulo");
+
+    const imgs = [];
+    coloresCI.forEach((color, i) => {
+      const div = document.createElement("div");
+      div.className = "imagen-circular";
+      div.id = `img-${i}`;
+      div.style.backgroundColor = color;
+      circulo.appendChild(div);
+      imgs.push(div);
+    });
+
+    const posiciones = [
+      { x: -50.5, y: -117.57 },
+      { x: 26.5, y: 75.57 },
+      { x: 26.5, y: 260.57 },
+      { x: -40.5, y: 428.57 }
+    ];
+
+    let currentIndex = 0;
+
+    function init() {
+      imgs.forEach((img, i) => {
+        img.style.transition = "none";
+        img.style.transform = `translate(${posiciones[i].x}px, ${posiciones[i].y}px)`;
+        img.style.opacity = "0";
+      });
+      imgs[currentIndex].style.opacity = "1";
+      cambiarContenido(currentIndex);
+      actualizarBotones(currentIndex);
+    }
+
+    function cambiarFondo(index) {
+      fondos.forEach(id => document.getElementById(id).classList.remove("visible"));
+      document.getElementById(fondos[index]).classList.add("visible");
+    }
+
+    function cambiarContenido(index) {
+      cambiarFondo(index);
+      document.getElementById("titulo").textContent = textos[index].titulo;
+      document.getElementById("cuadroTexto").textContent = textos[index].texto;
+      actualizarBotones(index);
+    }
+
+    function actualizarBotones(index) {
+      document.querySelectorAll('.botones button').forEach((btn, i) => {
+        btn.classList.remove("activo");
+        btn.style.setProperty('--btn-color', '');
+      });
+      const btnActivo = document.getElementById(`btn${index}`);
+      btnActivo.classList.add("activo");
+      btnActivo.style.setProperty('--btn-color', coloresCI[index]);
+    }
+
+    function moverSiguiente() {
+      const imgActual = imgs[currentIndex];
+      const siguienteIndex = (currentIndex + 1) % total;
+      const imgSiguiente = imgs[siguienteIndex];
+
+      const posActual = posiciones[currentIndex];
+      const posSiguiente = posiciones[siguienteIndex];
+
+      imgSiguiente.style.transition = "none";
+      imgSiguiente.style.transform = `translate(${posActual.x}px, ${posActual.y}px)`;
+      imgSiguiente.style.opacity = "0";
+      imgSiguiente.offsetHeight; // forzar reflow
+
+      const duracion = 1000;
+      imgSiguiente.style.transition = `transform ${duracion}ms ease-in-out, opacity ${duracion}ms ease-in-out`;
+      imgActual.style.transition = `transform ${duracion}ms ease-in-out, opacity ${duracion}ms ease-in-out`;
+
+      imgSiguiente.style.transform = `translate(${posSiguiente.x}px, ${posSiguiente.y}px)`;
+      imgSiguiente.style.opacity = "1";
+
+      imgActual.style.transform = `translate(${posSiguiente.x}px, ${posSiguiente.y}px)`;
+      imgActual.style.opacity = "0";
+
+      imgActual.addEventListener("transitionend", function handler(e) {
+        if (e.propertyName !== "opacity") return;
+        currentIndex = siguienteIndex;
+        cambiarContenido(currentIndex);
+        imgActual.removeEventListener("transitionend", handler);
+      });
+    }
+
+    function cambiarManual(index) {
+      if (index === currentIndex) return;
+
+      const imgActual = imgs[currentIndex];
+      const imgSiguiente = imgs[index];
+
+      const posActual = posiciones[currentIndex];
+      const posSiguiente = posiciones[index];
+
+      imgSiguiente.style.transition = "none";
+      imgSiguiente.style.transform = `translate(${posActual.x}px, ${posActual.y}px)`;
+      imgSiguiente.style.opacity = "0";
+      imgSiguiente.offsetHeight; // forzar reflow
+
+      imgSiguiente.style.transition = `transform 1s ease-in-out, opacity 1s ease-in-out`;
+      imgActual.style.transition = `transform 1s ease-in-out, opacity 1s ease-in-out`;
+
+      imgSiguiente.style.transform = `translate(${posSiguiente.x}px, ${posSiguiente.y}px)`;
+      imgSiguiente.style.opacity = "1";
+
+      imgActual.style.transform = `translate(${posSiguiente.x}px, ${posSiguiente.y}px)`;
+      imgActual.style.opacity = "0";
+
+      imgActual.addEventListener("transitionend", function handler(e) {
+        if (e.propertyName !== "opacity") return;
+        currentIndex = index;
+        cambiarContenido(currentIndex);
+        imgActual.removeEventListener("transitionend", handler);
+      });
+    }
+
+    // Eventos para botones
+    document.getElementById("btn0").addEventListener("click", () => cambiarManual(0));
+    document.getElementById("btn1").addEventListener("click", () => cambiarManual(1));
+    document.getElementById("btn2").addEventListener("click", () => cambiarManual(2));
+    document.getElementById("btn3").addEventListener("click", () => cambiarManual(3));
+
+    init();
+    setInterval(moverSiguiente, 5000);
+  </script>
+
+</body>
+</html>

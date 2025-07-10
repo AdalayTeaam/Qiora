@@ -322,3 +322,52 @@ function init() {
 init();
 setInterval(moverSiguiente, 6000);
 setInterval(girar, 6000);
+// Función para subir al inicio
+window.addEventListener("scroll", function () {
+    const btn = document.getElementById("btnScrollTop");
+    if (window.scrollY > 200) {
+        btn.style.display = "block";
+    } else {
+        btn.style.display = "none";
+    }
+});
+document.getElementById("btnScrollTop").onclick = function () {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+};
+
+//Animacion scroll 
+document.addEventListener("DOMContentLoaded", () => {
+    const imagen = imagenContainer?.querySelector("imagen1");
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                imagen.classList.add("visible");
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+
+    if (imagenContainer) {
+        observer.observe(imagenContainer);
+    }
+});
+
+// Cambio de icono 
+const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+const links = document.querySelectorAll('link[rel="icon"]');
+
+const updateIcon = () => {
+    const isDark = mediaQuery.matches;
+    const dataKey = isDark ? 'hrefDark' : 'hrefLight';
+
+    Array.prototype.slice.call(links).forEach(link => {
+        link.href = link.dataset[dataKey];
+    });
+};
+
+mediaQuery.addEventListener('change', updateIcon);
+updateIcon();

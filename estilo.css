@@ -122,7 +122,7 @@
 
  .logoGrande {
    width: clamp(200px, 40vw, 300px);
-   padding: 30px 0px;
+   /* padding: 30px 0px; */
  }
 
  #divFondoCelular {
@@ -155,8 +155,10 @@
 
  /* Logo */
  .logo {
-   width: clamp(300px, 40vw, 402px);
-   padding: 1px 5px 5px 2px;
+   width: clamp(200px, 30vw, 300px);
+   /* padding: 1px 5px 5px 2px; */
+    max-width: 100%; 
+    height: auto;
    object-fit: cover;
  }
 
@@ -961,9 +963,9 @@
      align-items: center;
    }
 
-   .logo {
-     padding: 10px;
-   }
+   /* .logo {
+    padding: 10px; 
+   } */
 
    .divUnidaNegocio {
      display: none;
@@ -1066,9 +1068,9 @@
      align-items: center;
    }
 
-   .logo {
+   /* .logo {
      padding: 10px 0px;
-   }
+   } */
 
    .divUnidaNegocio {
      display: none;
